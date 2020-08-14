@@ -211,7 +211,7 @@ class User(QtWidgets.QWidget):
 		super().__init__()
 		#self.setMouseTracking(True)
 		self._init_ui()
-		#self._init_signal_and_slot()
+		self._init_signal_and_slot()
 
 	def _init_ui(self):
 		self._main_layout = QtWidgets.QVBoxLayout()
@@ -242,6 +242,20 @@ class User(QtWidgets.QWidget):
 		self._main_layout.addWidget(self._button_save)
 		self.setLayout(self._main_layout)
 
+	def _init_signal_and_slot(self):
+		self._button_save.clicked.connect(self._save)
+
+	def _save(self):
+		dic = {}
+		result = []
+		filename = './config/config.json'
+
+		dic['tId'] = self._tencent_id.text()
+		dic['tKey'] = self._tencent_Key.text()
+		result.append(dic)
+
+		with open(filename, 'w') as f:
+			json.dump(result, f)
 
 class subtitleCong(QtWidgets.QWidget):
 	def __init__(self):
