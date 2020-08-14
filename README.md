@@ -6,6 +6,6 @@
 
 在*subtitle.rar*内是打包好的版本，欢迎下载并使用~
 
-链接：https://pan.baidu.com/s/1cV8Gixt4cUwM2U_qfqGuqg 
-提取码：hojs 
+链接：https://pan.baidu.com/s/1DaNXYUBuizk706V1AQNCpQ 
+提取码：izxo 
 复制这段内容后打开百度网盘手机App，操作更方便哦
