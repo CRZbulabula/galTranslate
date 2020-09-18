@@ -12,6 +12,8 @@ import sys, json, time, base64, threading, _thread, os
 from setting import Setting
 from screen import WScreenShot
 from tencent import tencent
+from baiduocr import baiduOCR
+from baidu import baidu
 
 Left, Top, Right, Bottom, LeftTop, RightTop, LeftBottom, RightBottom = range(8)
 
@@ -122,9 +124,26 @@ class Subtitle(QtWidgets.QMainWindow):
 		with open(filename) as f:
 			self._config_data = json.load(f)
 			self._config_data = self._config_data[0]
-		self._gap = self._config_data['gap']
-		self._tencent_id = self._config_data['tId']
-		self._tencent_Key = self._config_data['tKey']
+		if 'gap' in self._config_data:
+			self._gap = self._config_data['gap']
+		if 'tId' in self._config_data:
+			self._tencent_id = self._config_data['tId']
+		if 'tKey' in self._config_data:
+			self._tencent_Key = self._config_data['tKey']
+		if 'ocrId' in self._config_data:
+			self._ocr_Id = self._config_data['ocrId']
+		if 'ocrKey' in self._config_data:
+			self._ocr_Key = self._config_data['ocrKey']
+		if 'ocrToken' in self._config_data:
+			self._ocr_Token = [1]
+			self._ocr_Token[0] = self._config_data['ocrToken']
+		else:
+			self._ocr_Token = [1]
+			self._ocr_Token[0] = ''
+		if 'baiduId' in self._config_data:
+			self._baidu_Id = self._config_data['baiduId']
+		if 'baiduKey' in self._config_data:
+			self._baidu_Key = self._config_data['baiduKey']
 
 	def _open_setting(self):
 		self._setting = Setting()
@@ -134,6 +153,13 @@ class Subtitle(QtWidgets.QMainWindow):
 		self._cut = WScreenShot()
 		self._cut._screen_signal.connect(self._save_points)
 		self._cut.show()
+
+	def _translate_API(self, encodestr):
+		# OCR提取文字并翻译
+		sentence = baiduOCR(encodestr, self._ocr_Id, self._ocr_Key, self._ocr_Token)
+		result = baidu(sentence, self._baidu_Id, self._baidu_Key)
+		# result = tencent(encodestr, self._tencent_id, self._tencent_Key)
+		return result
 
 	def _save_points(self, _start_point, _end_point):
 		self._start_point = _start_point
@@ -146,7 +172,9 @@ class Subtitle(QtWidgets.QMainWindow):
 		with open('./img.png', 'rb') as f:  # 以二进制读取图片
 			data = f.read()
 			encodestr = base64.b64encode(data) # 得到 byte 编码的数据
-		result = tencent(encodestr, self._tencent_id, self._tencent_Key)
+
+		result = self._translate_API(encodestr)
+
 		# print(result)
 		self._subtitle_label.setText(result)
 
@@ -164,7 +192,8 @@ class Subtitle(QtWidgets.QMainWindow):
 				with open('./config/img_last.png', 'rb') as f:  # 以二进制读取图片
 					data = f.read()
 					encodestr = base64.b64encode(data) # 得到 byte 编码的数据
-				result = tencent(encodestr, self._tencent_id, self._tencent_Key)
+				
+				result = self._translate_API(encodestr)
 				self._subtitle_label.setText(result)
 				_flag_first = False
 			else:
@@ -178,7 +207,10 @@ class Subtitle(QtWidgets.QMainWindow):
 					with open('./config/img_last.png', 'rb') as f:  # 以二进制读取图片
 						data = f.read()
 						encodestr = base64.b64encode(data) # 得到 byte 编码的数据
-					result = tencent(encodestr, self._tencent_id, self._tencent_Key)
+
+					result = self._translate_API(encodestr)
+
+					print(result)
 					self._subtitle_label.setText(result)
 					_flag_first = False
 

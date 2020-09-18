@@ -84,13 +84,33 @@ class Setting(QtWidgets.QMainWindow):
 			self._config_data = json.load(f)
 			self._config_data = self._config_data[0]
 
-		if self._config_data['tId'] != None:
-			self._user_page._tencent_id.setPlaceholderText(self._config_data['tId'])
+		if 'ocrId' in self._config_data and self._config_data['ocrId'] != "":
+			self._user_page._baiduocr_id.setText(self._config_data['ocrId'])
+		else:
+			self._user_page._baiduocr_id.setPlaceholderText("请输入")
+			
+		if 'ocrKey' in self._config_data and self._config_data['ocrKey'] != "":
+			self._user_page._baiduocr_key.setText(self._config_data['ocrKey'])
+		else:
+			self._user_page._baiduocr_key.setPlaceholderText("请输入")
+		
+		if 'baiduId' in self._config_data and self._config_data['baiduId'] != "":
+			self._user_page._baidu_id.setText(self._config_data['baiduId'])
+		else:
+			self._user_page._baidu_id.setPlaceholderText("请输入")
+			
+		if 'baiduKey' in self._config_data and self._config_data['baiduKey'] != "":
+			self._user_page._baidu_Key.setText(self._config_data['baiduKey'])
 		else:
 			self._user_page._tencent_id.setPlaceholderText("请输入")
 
-		if self._config_data['tKey'] != None:
-			self._user_page._tencent_Key.setPlaceholderText(self._config_data['tKey'])
+		if 'tId' in self._config_data and self._config_data['tId'] != "":
+			self._user_page._tencent_id.setText(self._config_data['tId'])
+		else:
+			self._user_page._tencent_id.setPlaceholderText("请输入")
+
+		if 'tKey' in self._config_data and self._config_data['tKey'] != "":
+			self._user_page._tencent_Key.setText(self._config_data['tKey'])
 		else:
 			self._user_page._tencent_Key.setPlaceholderText("请输入")
 
@@ -216,6 +236,42 @@ class User(QtWidgets.QWidget):
 	def _init_ui(self):
 		self._main_layout = QtWidgets.QVBoxLayout()
 
+		self._baiduocr_label = QtWidgets.QLabel("百度OCR")
+
+		self._blayout_1 = QtWidgets.QHBoxLayout()
+		self._bwidget_1 = QtWidgets.QWidget()
+		self._bwidget_1.setLayout(self._blayout_1)
+		self._ocrid_label = QtWidgets.QLabel("APIKey")
+		self._baiduocr_id = QtWidgets.QLineEdit()
+		self._blayout_1.addWidget(self._ocrid_label)
+		self._blayout_1.addWidget(self._baiduocr_id)
+
+		self._blayout_2 = QtWidgets.QHBoxLayout()
+		self._bwidget_2 = QtWidgets.QWidget()
+		self._bwidget_2.setLayout(self._blayout_2)
+		self._bocrkey_label = QtWidgets.QLabel("SecretKey")
+		self._baiduocr_key = QtWidgets.QLineEdit()
+		self._blayout_2.addWidget(self._bocrkey_label)
+		self._blayout_2.addWidget(self._baiduocr_key)
+
+		self._baidu_label = QtWidgets.QLabel("百度翻译")
+
+		self._blayout_3 = QtWidgets.QHBoxLayout()
+		self._bwidget_3 = QtWidgets.QWidget()
+		self._bwidget_3.setLayout(self._blayout_3)
+		self._bid_label = QtWidgets.QLabel("APIKey")
+		self._baidu_id = QtWidgets.QLineEdit()
+		self._blayout_3.addWidget(self._bid_label)
+		self._blayout_3.addWidget(self._baidu_id)
+
+		self._blayout_4 = QtWidgets.QHBoxLayout()
+		self._bwidget_4 = QtWidgets.QWidget()
+		self._bwidget_4.setLayout(self._blayout_4)
+		self._bkey_label = QtWidgets.QLabel("SecretKey")
+		self._baidu_Key = QtWidgets.QLineEdit()
+		self._blayout_4.addWidget(self._bkey_label)
+		self._blayout_4.addWidget(self._baidu_Key)
+
 		self._tencent_label = QtWidgets.QLabel("腾讯翻译")
 
 		self._tlayout_1 = QtWidgets.QHBoxLayout()
@@ -235,27 +291,46 @@ class User(QtWidgets.QWidget):
 		self._tlayout_2.addWidget(self._tencent_Key)
 
 		self._button_save = QtWidgets.QPushButton("保存")
+		self._buttom_widget = QtWidgets.QWidget()
+		self._buttom_layout = QtWidgets.QHBoxLayout()
+		self._buttom_widget.setLayout(self._buttom_layout)
+		self._buttom_layout.addStretch(1)
+		self._buttom_layout.addWidget(self._button_save)
+		self._buttom_layout.addStretch(1)
 
+		self._main_layout.addWidget(self._baiduocr_label)
+		self._main_layout.addWidget(self._bwidget_1)
+		self._main_layout.addWidget(self._bwidget_2)
+		self._main_layout.addWidget(self._baidu_label)
+		self._main_layout.addWidget(self._bwidget_3)
+		self._main_layout.addWidget(self._bwidget_4)
 		self._main_layout.addWidget(self._tencent_label)
 		self._main_layout.addWidget(self._twidget_1)
 		self._main_layout.addWidget(self._twidget_2)
-		self._main_layout.addWidget(self._button_save)
+		self._main_layout.addWidget(self._buttom_widget)
 		self.setLayout(self._main_layout)
 
 	def _init_signal_and_slot(self):
 		self._button_save.clicked.connect(self._save)
 
 	def _save(self):
-		dic = {}
 		result = []
 		filename = './config/config.json'
 
-		dic['tId'] = self._tencent_id.text()
-		dic['tKey'] = self._tencent_Key.text()
-		result.append(dic)
+		with open(filename) as f:
+			self._config_data = json.load(f)
+			self._config_data = self._config_data[0]
+		
+		self._config_data['ocrId'] = self._baiduocr_id.text()
+		self._config_data['ocrKey'] = self._baiduocr_key.text()
+		self._config_data['baiduId'] = self._baidu_id.text()
+		self._config_data['baiduKey'] = self._baidu_Key.text()
+		self._config_data['tId'] = self._tencent_id.text()
+		self._config_data['tKey'] = self._tencent_Key.text()
+		result.append(self._config_data)
 
 		with open(filename, 'w') as f:
-			json.dump(result, f)
+			json.dump(result, f, indent = 4)
 
 class subtitleCong(QtWidgets.QWidget):
 	def __init__(self):
